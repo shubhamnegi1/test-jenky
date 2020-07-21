@@ -1,0 +1,79 @@
+pipeline { 
+    agent { label 'master' }
+    environment{
+        AWS_ACCESS_KEY_ID	= "${params.AWS_ACCESS_KEY_ID}"
+     AWS_SECRET_ACCESS_KEY  = "${params.AWS_SECRET_ACCESS_KEY}" 
+    }
+    tools { 
+        maven "Default"
+        jdk "Default"
+    }
+    options{
+        timestamps()
+    }
+    stages {
+            //Cleaning the workspace
+        stage('Clean Workspace'){
+                steps {
+                    deleteDir()
+                }
+        }   
+            //Checking out Source Code
+            stage('Checkout SCM'){
+                steps {
+//                checkout([$class: 'GitSCM', branches: [[name: '$BranchName']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'Github_cred', url: 'git@github.com:Royal-Enfield/re-platform-online-bike-booking-batch-service']]])
+                sh "cp -r /home/anant/oms-notification/* $WORKSPACE"
+                        }    
+        }    
+            //Building the Source Code and Testing        
+             stage('Building Code'){
+                steps {
+                    sh "echo $WORKSPACE"
+                    sh "mvn -B -f $WORKSPACE/pom.xml clean package"
+                } 
+           }
+           //Running the SonarQube Analysis for the source code
+/*           stage('Running SonarQube Analysis'){
+               environment{
+                   scannerHome = tool 'Sonar'
+               }
+                steps{
+                    withSonarQubeEnv('SonarQube'){
+                     sh '''cat > sonar-project.properties << EOF 
+                            sonar.projectName=<sonar-project-name>
+                            sonar.projectKey=<sonar-project-key>
+                            sonar.language=java
+                            sonar.sources=src/
+                            sonar.java.binaries=target/classes
+                            sonar.branch.name=$BranchName
+                            EOF ''' 
+                  sh "$scannerHome/bin/sonar-scanner -Dproject.settings=sonar-project.properties"
+                  }                  
+               }
+           }  */
+           //Building the Docker Image from generated artifact and pushing it to Remote Registry
+           stage('Building and Pushing Docker Image'){
+               steps{
+                   sh "docker build -t ${Registry}/${ImageName}-${AWS_ENVIRONMENT}-${VF_REGION}:${BUILD_NUMBER} ${WORKSPACE}"
+                   withCredentials([usernamePassword(credentialsId: 'EcrRegistry', passwordVariable: 'password', usernameVariable: 'username')]) {
+                    sh "docker login $Registry -u $username -p $password"
+                    sh "docker push ${Registry}/${ImageName}-${AWS_ENVIRONMENT}-${VF_REGION}:${BUILD_NUMBER}"
+                    }
+               }
+           }
+
+           stage('Deploying Applcation(using Terraform)'){
+               when{
+                   environment name: 'Deployment', value: 'Yes'
+               }         
+            steps {
+              script {
+                   dir('deploy/terraform'){
+                       sh label: 'configure_terraform', script: "/home/anant/bin/terraform init -backend-config=\"../config/${env.VF_REGION}/${env.AWS_ENVIRONMENT}.tfvars\" --reconfigure"
+                       sh label: 'run_terraform', script: "cp \"../config/${env.VF_REGION}/${env.AWS_ENVIRONMENT}.tfvars\" config.auto.tfvars; /home/anant/bin/terraform apply -var=\"account_environment=${env.AWS_ENVIRONMENT}\" -var=\"vf_region=${env.VF_REGION}\" -var=\"image_name=${Registry}/${ImageName}-${AWS_ENVIRONMENT}-${VF_REGION}:${BUILD_NUMBER}\" -auto-approve"
+                    }
+                }
+            }
+        } 
+    }    
+}

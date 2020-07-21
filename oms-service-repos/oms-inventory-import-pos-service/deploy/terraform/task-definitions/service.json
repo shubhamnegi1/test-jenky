@@ -1,0 +1,91 @@
+[
+        {   "name": "${task_family_name}",
+            "image": "${image_name}",
+            "portMappings": [{
+                            "hostPort": ${port},
+                            "protocol": "tcp",
+                            "containerPort": ${port}
+                    }],
+                    "networkMode": "awsvpc",
+                    "logConfiguration": {
+                            "logDriver": "awslogs",
+                            "options": {
+                                    "awslogs-group": "${log_group}",
+                                    "awslogs-region": "${region}",
+                                    "awslogs-stream-prefix": "ecs"
+                            }
+                    },
+                    "environment": [{
+                        "name": "adp.so.mq.dlqueue.tlogReq",
+                        "value": "VFE.SERVICE.ROUTER"
+                      },
+                      {
+                        "name": "adp.so.mq.queue.tlogReq",
+                        "value": "VFE.SERVICE.ROUTER"
+                      },
+                      {
+                        "name": "eventuatelocal.kafka.bootstrap.servers",
+                        "value": "b-1.vf-cm-dev-ndoms-emea-k.xb76s3.c2.kafka.eu-west-1.amazonaws.com:9092"
+                      },
+                      {
+                        "name": "eventuatelocal.zookeeper.connection.string",
+                        "value": "z-2.vf-cm-dev-ndoms-emea-k.xb76s3.c2.kafka.eu-west-1.amazonaws.com:2181"
+                      },
+                      {
+                        "name": "ibm.mq.authenticationEnabled",
+                        "value": "false"
+                      },
+                      {
+                        "name": "ibm.mq.cacheLevelName",
+                        "value": "CACHE_CONSUMER"
+                      },
+                      {
+                        "name": "ibm.mq.channel",
+                        "value": "CLT.PRG.MIMQMEU4A"
+                      },
+                      {
+                        "name": "ibm.mq.connName",
+                        "value": "172.22.161.24(1415)"
+                      },
+                      {
+                        "name": "ibm.mq.hostName",
+                        "value": "172.22.161.24"
+                      },
+                      {
+                        "name": "ibm.mq.maxConcurrentConsumers",
+                        "value": "1"
+                      },
+                      {
+                        "name": "ibm.mq.port",
+                        "value": "1415"
+                      },
+                      {
+                        "name": "ibm.mq.queueManager",
+                        "value": "MIMQMEU4A"
+                      },
+                      {
+                        "name": "spring.datasource.driver.class.name",
+                        "value": "com.mysql.jdbc.Driver"
+                      },
+                      {
+                        "name": "spring.datasource.driverClassName",
+                        "value": "com.mysql.jdbc.Driver"
+                      },
+                      {
+                        "name": "spring.datasource.password",
+                        "value": "masterpassword"
+                      },
+                      {
+                        "name": "spring.datasource.url",
+                        "value": "jdbc:mysql://vf-cm-dev-ndoms-emea-rds-instance.cvezycky7sah.eu-west-1.rds.amazonaws.com:3306/eventuate?autoReconnect=true&useSSL=false&createDatabaseIfNotExist=true"
+                      },
+                      {
+                        "name": "spring.datasource.username",
+                        "value": "root"
+                      }
+              
+                ],
+                    "mountPoints": [],
+                    "essential": true,
+                    "volumesFrom": []    }
+]

@@ -1,0 +1,42 @@
+[
+    {   "name": "oms-notification",
+        "image": "${image_name}",
+        "portMappings": [{
+                        "hostPort": 8086,
+                        "protocol": "tcp",
+                        "containerPort": 8086
+                }],
+                "networkMode": "awsvpc",
+                "logConfiguration": {
+                        "logDriver": "awslogs",
+                        "options": {
+                                "awslogs-group": "/ecs/oms-notification-task",
+                                "awslogs-region": "us-east-2",
+                                "awslogs-stream-prefix": "ecs"
+                        }
+                },
+                "environment": [{
+                                "name": "eventuatelocal.kafka.bootstrap.servers",
+                                "value": "b-1.vf-test-kafka-cluster.bouc95.c2.kafka.us-east-2.amazonaws.com:9092"
+                        },
+                        {
+                                "name": "eventuatelocal.zookeeper.connection.string",
+                                "value": "z-2.vf-test-kafka-cluster.bouc95.c2.kafka.us-east-2.amazonaws.com:2181"
+                        },
+                        {
+                                "name": "spring.datasource.password",
+                                "value": "masterpassword"
+                        },
+                        {
+                                "name": "spring.datasource.url",
+                                "value": "jdbc:mysql://vf-test-db1.c4eoykhoq1aa.us-east-2.rds.amazonaws.com:3306/notification?useSSL=false&createDatabaseIfNotExist=true"
+                        },
+                        {
+                                "name": "spring.datasource.username",
+                                "value": "root"
+                        }
+                ],
+                "mountPoints": [],
+                "essential": true,
+                "volumesFrom": []    }
+]

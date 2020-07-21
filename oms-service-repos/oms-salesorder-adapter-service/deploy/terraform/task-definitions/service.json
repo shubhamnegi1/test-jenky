@@ -1,0 +1,102 @@
+[
+        {   "name": "${task_family_name}",
+            "image": "${image_name}",
+            "portMappings": [{
+                            "hostPort": ${port},
+                            "protocol": "tcp",
+                            "containerPort": ${port}
+                    }],
+                    "networkMode": "awsvpc",
+                    "logConfiguration": {
+                            "logDriver": "awslogs",
+                            "options": {
+                                    "awslogs-group": "${log_group}",
+                                    "awslogs-region": "${region}",
+                                    "awslogs-stream-prefix": "ecs"
+                            }
+                    },
+                    "environment": [{
+                        "name": "adp.devmode.enabled",
+                        "value": "true"
+                },
+{
+                        "name": "spring.profiles.active",
+                        "value": "default"
+                },
+{
+                        "name": "adp.testFilePath",
+                        "value": "/tmp/oas"
+                },
+{
+                        "name": "adp.so.mq.queue.createReq",
+                        "value": "VFE.ESB.NDOM"
+                },
+{
+                        "name": "adp.so.mq.dlqueue.createReq",
+                        "value": "VFE.ESB.NDOM"
+                },      
+{
+                        "name": "adp.so.rest.createReq",
+                        "value": "http://172.23.130.83:8081/api/v1/sales-order"
+                },
+{
+                        "name": "adp.so.rest.updateReq",
+                        "value": "http://172.23.130.83:8081/api/v1/sales-order/status"
+                },
+{
+                        "name": "adp.so.rest.acknowledgeReq",
+                        "value": "http://172.23.130.83:8081/api/v1/sales-order/acknowledge"
+                },
+{
+                        "name": "adp.so.validate.orderSchema",
+                        "value": "xsd/OnlineOrder.xsd"
+                },
+{
+                        "name": "ibm.mq.channel",
+                        "value": "CLT.PRG.VEATURS001"
+                },
+{
+                        "name": "ibm.mq.hostName",
+                        "value": "172.22.161.19"
+                },
+{
+                        "name": "ibm.mq.port",
+                        "value": "1414"
+                },
+{
+                        "name": "ibm.mq.maxConcurrentConsumers",
+                        "value": "1"
+                },
+{
+                        "name": "ibm.mq.cacheLevelName",
+                        "value": "CACHE_CONSUMER"
+                },
+{
+                        "name": "management.endpoints.web.exposure.include",
+                        "value": "info,health,camelroutes"
+                },
+{
+                        "name": "management.endpoint.health.enabled",
+                        "value": "true"
+                },
+								{
+                        "name": "management.endpoint.camelroutes.enabled",
+                        "value": "true"
+                },
+{
+                        "name": "management.endpoint.camelroutes.read-only",
+                        "value": "true"
+                },
+{
+                        "name": "camel.component.servlet.mapping.contextPath",
+                        "value": "/adp/*"
+},
+{
+                        "name": "ibm.mq.queueManager",
+                        "value": "VEATURS001"
+}
+                ],
+                    "mountPoints": [],
+                    "essential": true,
+                    "volumesFrom": []    }
+]

@@ -1,0 +1,41 @@
+[
+        {   "name": "${task_family_name}",
+            "image": "${image_name}",
+            "portMappings": [{
+                            "hostPort": ${port},
+                            "protocol": "tcp",
+                            "containerPort": ${port}
+                    }],
+                    "networkMode": "awsvpc",
+                    "logConfiguration": {
+                            "logDriver": "awslogs",
+                            "options": {
+                                    "awslogs-group": "${log_group}",
+                                    "awslogs-region": "${region}",
+                                    "awslogs-stream-prefix": "ecs"
+                            }
+                    },
+                    "environment": [{
+                        "name": "eventuatelocal.kafka.bootstrap.servers",
+                        "value": "${eventuatelocal_kafka_bootstrap_servers}"
+                },
+                {
+                        "name": "eventuatelocal.zookeeper.connection.string",
+                        "value": "${eventuatelocal_zookeeper_connection_string}"
+                },
+                {
+                        "name": "spring.datasource.password",
+                        "value": "masterpassword"
+                },
+                {
+                        "name": "spring.datasource.url",
+                        "value": "${spring_datasource_url}"
+                },
+                {
+                        "name": "spring.datasource.username",
+                        "value": "${spring_datasource_username}"
+                }],
+                    "mountPoints": [],
+                    "essential": true,
+                    "volumesFrom": []    }
+]
